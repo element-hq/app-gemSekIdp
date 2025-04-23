@@ -49,11 +49,11 @@ import org.springframework.http.HttpStatus;
 public abstract class RequestValidator {
 
   public static void validateParParams(
-      final JsonWebToken entityStmntAboutRp, final String redirectUri, final String scope) {
+      final JsonWebToken entityStmntOfRp, final String redirectUri, final String scope) {
     // Msg 2a and 2b
     // Msg 2c and 2d
-    EntityStatementRpVerifier.verifyRedirectUriExistsInEntityStmnt(entityStmntAboutRp, redirectUri);
-    EntityStatementRpVerifier.verifyRequestedScopesListedInEntityStmnt(entityStmntAboutRp, scope);
+    EntityStatementRpVerifier.verifyRedirectUriExistsInEntityStmnt(entityStmntOfRp, redirectUri);
+    EntityStatementRpVerifier.verifyRequestedScopesListedInEntityStmnt(entityStmntOfRp, scope);
     verifyIdpDoesSupportRequestedScopes(scope);
   }
 
@@ -66,11 +66,9 @@ public abstract class RequestValidator {
       }
     } else {
       try {
-        final X509Certificate certFromRequest =
-            CryptoLoader.getCertificateFromPem(
-                java.net.URLDecoder.decode(clientCert, StandardCharsets.UTF_8).getBytes());
-        final List<X509Certificate> certsFromEntityStatement =
-            entityStmntRp.getRpTlsClientCertificates();
+        final X509Certificate certFromRequest = CryptoLoader.getCertificateFromPem(
+            java.net.URLDecoder.decode(clientCert, StandardCharsets.UTF_8).getBytes());
+        final List<X509Certificate> certsFromEntityStatement = entityStmntRp.getRpTlsClientCertificates();
         if (certsFromEntityStatement.stream()
             .noneMatch(certFromEs -> certFromEs.equals(certFromRequest))) {
           throw new GsiException(
@@ -115,8 +113,7 @@ public abstract class RequestValidator {
   }
 
   protected static void verifyIdpDoesSupportRequestedScopes(final String scopeParameter) {
-    final Set<String> requestedScopes =
-        Arrays.stream(scopeParameter.split(" ")).collect(Collectors.toSet());
+    final Set<String> requestedScopes = Arrays.stream(scopeParameter.split(" ")).collect(Collectors.toSet());
 
     if (!(GsiConstants.SCOPES_SUPPORTED.containsAll(requestedScopes))) {
       throw new GsiException(
@@ -145,7 +142,8 @@ public abstract class RequestValidator {
                 INVALID_REQUEST, "invalid amr value: " + amrValue, HttpStatus.BAD_REQUEST);
           }
         });
-    if (acr.isEmpty() || amr.isEmpty()) return;
+    if (acr.isEmpty() || amr.isEmpty())
+      return;
     if (acr.contains(ACR_HIGH) && !acr.contains(ACR_SUBSTANTIAL)) {
       amr.forEach(
           value -> {
