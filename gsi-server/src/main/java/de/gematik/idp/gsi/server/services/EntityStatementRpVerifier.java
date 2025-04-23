@@ -47,8 +47,8 @@ public abstract class EntityStatementRpVerifier {
 
   public static void verifyRequestedScopesListedInEntityStmnt(
       final JsonWebToken entityStmntRp, final String scopeParameter) {
-    final List<String> scopesFromEntityStatementRp =
-        EntityStatementRpReader.getScopesFromEntityStatementRp(entityStmntRp);
+    final List<String> scopesFromEntityStatementRp = EntityStatementRpReader
+        .getScopesFromEntityStatementRp(entityStmntRp);
     if (Arrays.stream(scopeParameter.split(" "))
         .anyMatch(scope -> !scopesFromEntityStatementRp.contains(scope))) {
       throw new GsiException(
