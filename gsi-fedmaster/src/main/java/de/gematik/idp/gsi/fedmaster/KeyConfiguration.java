@@ -25,6 +25,7 @@ import de.gematik.idp.data.KeyConfig;
 import de.gematik.idp.file.ResourceReader;
 import de.gematik.idp.gsi.fedmaster.configuration.FedMasterConfiguration;
 import de.gematik.idp.gsi.fedmaster.exceptions.FedmasterException;
+import java.io.File;
 import java.io.IOException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
@@ -57,9 +58,8 @@ public class KeyConfiguration {
 
   private FederationPrivKey getFederationPrivKey(final KeyConfig keyConfiguration) {
     try {
-      final PrivateKey privateKey =
-          KeyUtility.readX509PrivateKeyPlain(
-              ResourceReader.getFileFromResourceAsTmpFile(keyConfiguration.getFileName()));
+      final PrivateKey privateKey = KeyUtility.readX509PrivateKeyPlain(
+          getFileFromResourceOrFilePath(keyConfiguration.getFileName()));
       final PkiIdentity pkiIdentity = new PkiIdentity();
       pkiIdentity.setPrivateKey(privateKey);
       final FederationPrivKey federationPrivKey = new FederationPrivKey(pkiIdentity);
@@ -75,9 +75,8 @@ public class KeyConfiguration {
 
   public static FederationPubKey getFederationPubKey(final KeyConfig keyConfiguration) {
     try {
-      final PublicKey publicKey =
-          KeyUtility.readX509PublicKey(
-              ResourceReader.getFileFromResourceAsTmpFile(keyConfiguration.getFileName()));
+      final PublicKey publicKey = KeyUtility
+          .readX509PublicKey(getFileFromResourceOrFilePath(keyConfiguration.getFileName()));
       final FederationPubKey federationPubKey = new FederationPubKey();
       federationPubKey.setPublicKey(Optional.ofNullable(publicKey));
       federationPubKey.setKeyId(keyConfiguration.getKeyId());
@@ -87,5 +86,17 @@ public class KeyConfiguration {
       throw new FedmasterException(
           "Error while loading Key from resource '" + keyConfiguration.getFileName() + "'", e);
     }
+  }
+
+  private static File getFileFromResourceOrFilePath(final String path) throws IOException {
+    // First try to load from the Java project resources
+    File keyFile;
+    try {
+      keyFile = ResourceReader.getFileFromResourceAsTmpFile(path);
+    } catch (IOException | NullPointerException e) {
+      // If resource loading fails, try as direct file path
+      keyFile = new File(path);
+    }
+    return keyFile;
   }
 }
