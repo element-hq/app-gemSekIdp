@@ -203,7 +203,7 @@ public class FedIdpController {
     RequestValidator.validateCertificate(
         clientCert, entityStmntOfRp, gsiConfiguration.isClientCertRequired());
 
-    RequestValidator.validateParParams(entityStmntABoutRp, fachdienstRedirectUri, scope);
+    RequestValidator.validateParParams(entityStmntOfRp.getToken(), fachdienstRedirectUri, scope);
 
     log.info("Amount of stored fedIdpAuthSessions: {}", fedIdpAuthSessions.size());
 

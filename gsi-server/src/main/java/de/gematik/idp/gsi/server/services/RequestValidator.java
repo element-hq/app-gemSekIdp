@@ -49,11 +49,11 @@ import org.springframework.http.HttpStatus;
 public abstract class RequestValidator {
 
   public static void validateParParams(
-      final JsonWebToken entityStmntAboutRp, final String redirectUri, final String scope) {
+      final JsonWebToken entityStmntOfRp, final String redirectUri, final String scope) {
     // Msg 2a and 2b
     // Msg 2c and 2d
-    EntityStatementRpVerifier.verifyRedirectUriExistsInEntityStmnt(entityStmntAboutRp, redirectUri);
-    EntityStatementRpVerifier.verifyRequestedScopesListedInEntityStmnt(entityStmntAboutRp, scope);
+    EntityStatementRpVerifier.verifyRedirectUriExistsInEntityStmnt(entityStmntOfRp, redirectUri);
+    EntityStatementRpVerifier.verifyRequestedScopesListedInEntityStmnt(entityStmntOfRp, scope);
     verifyIdpDoesSupportRequestedScopes(scope);
   }
 
